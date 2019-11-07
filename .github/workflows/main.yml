@@ -9,9 +9,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    #- name: Install Dependencies
-    #  run: vcpkg install sdl2 cxxopts spdlog entt spirv-cross spirv-tools
-
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
 
@@ -19,7 +16,7 @@ jobs:
       shell: bash
       working-directory: ${{runner.workspace}}/build
       run: |
-        cmake .. -DCMAKE_TOOLCHAIN_FILE="/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+        cmake $GITHUB_WORKSPACE -DCMAKE_TOOLCHAIN_FILE="/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" \
         -DOPENBLACK_BGFX_USE_SYSTEM_DEPS=ON \
         -G Ninja \
         -DCMAKE_BUILD_TYPE=Release
