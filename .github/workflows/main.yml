@@ -16,6 +16,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
+    - name: Install Dependencies
+      run: vcpkg install sdl2 cxxopts spdlog entt spirv-cross spirv-tools
+
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
 
