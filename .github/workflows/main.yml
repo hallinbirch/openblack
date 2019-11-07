@@ -1,37 +1,28 @@
 name: CI
-
 on: [push]
-
-env:
-  BUILD_TYPE: Release
-
 jobs:
   build:
-
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest, macOS-latest]
-
+    name: Build openblack
+    runs-on: ubuntu-latest
+    container:
+      image: openblack/openblack:ubuntu-rolling-gcc
     steps:
     - uses: actions/checkout@v1
 
-    - name: Install Dependencies
-      run: vcpkg install sdl2 cxxopts spdlog entt spirv-cross spirv-tools
+    #- name: Install Dependencies
+    #  run: vcpkg install sdl2 cxxopts spdlog entt spirv-cross spirv-tools
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Configure CMake
-      shell: bash
       working-directory: ${{runner.workspace}}/build
-      # Note the current convention is to use the -S and -B options here to specify source 
-      # and build directories, but this is only available with CMake 3.13 and higher.  
-      # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-      # run: cmake -S $GITHUB_WORKSPACE -B ${{runner.workspace}}/build -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-linux
+      run: |
+        cmake .. -DCMAKE_TOOLCHAIN_FILE="/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+        -DOPENBLACK_BGFX_USE_SYSTEM_DEPS=ON \
+        -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE
+      run: cmake --build .
