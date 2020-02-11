@@ -28,7 +28,7 @@
 #pragma once
 
 template <typename Event>
-using EventHandler = std::function<void(Event)>;
+using EventHandler = std::function<void(const Event&)>;
 
 class IEventQueue
 {
