@@ -79,8 +79,6 @@ Game::Game(Arguments&& args)
 		this->_gui->ProcessEventSdl2(event);
 		this->_config.running = this->ProcessEvents(event);
 	}));
-	_eventManager->AddHandler(std::function([this](const SDL_Event& event) {
-	}));
 }
 
 Game::~Game()
