@@ -411,8 +411,15 @@ void Registry::DrawModels(graphics::RenderPass viewId, const graphics::ShaderMan
 
 	for (const auto& [meshId, placers] : renderCtx.instancedDrawDescs)
 	{
-		const L3DMesh& mesh = Game::instance()->GetMeshPack().GetMesh(static_cast<uint32_t>(meshId));
-		mesh.Submit(viewId, renderCtx.instanceUniformBuffer, placers.offset, placers.count, *objectShaderInstanced, state);
+		if (meshId == MeshId::PlayerHand)
+		{
+			Game::instance()->GetHandModel().Submit(viewId, renderCtx.instanceUniformBuffer, placers.offset, placers.count, *objectShaderInstanced, state);
+		}
+		else
+		{
+			const L3DMesh& mesh = Game::instance()->GetMeshPack().GetMesh(static_cast<uint32_t>(meshId));
+			mesh.Submit(viewId, renderCtx.instanceUniformBuffer, placers.offset, placers.count, *objectShaderInstanced, state);
+		}
 	}
 
 	if (viewId == graphics::RenderPass::Main)

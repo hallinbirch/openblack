@@ -70,6 +70,8 @@ Game::Game(Arguments&& args)
 	}
 	_renderer = std::make_unique<Renderer>(_window.get(), args.rendererType, args.vsync);
 	_fileSystem->SetGamePath(GetGamePath());
+	_handModel = std::make_unique<L3DMesh>();
+	_handModel->LoadFromFile("Data/CreatureMesh/Hand_Boned_Base2.l3d");
 	spdlog::debug("The GamePath is \"{}\".", _fileSystem->GetGamePath().generic_string());
 
 	_gui = Gui::create(_window.get(), graphics::RenderPass::ImGui, args.scale);
@@ -109,7 +111,7 @@ bool Game::ProcessEvents(const SDL_Event &event)
 		handTransform.position = _intersection;
 		auto cameraRotation = _camera->GetRotation();
 		auto handHeight = GetLandIsland().GetHeightAt(glm::vec2(handTransform.position.x, handTransform.position.z)) + 1.2f;
-		handTransform.rotation = glm::vec3(glm::radians(cameraRotation.x), glm::radians(cameraRotation.y), glm::radians(cameraRotation.z));
+		handTransform.rotation = glm::vec3(0, -glm::radians(cameraRotation.y), 0);
 		handTransform.position = glm::vec3(handTransform.position.x, handHeight, handTransform.position.z);
 		_entityRegistry->Context().renderContext.dirty = true;
 	}
@@ -342,7 +344,7 @@ void Game::LoadMap(const std::string& name)
 	// We need a hand for the player
 	_handEntity = _entityRegistry->Create();
 	_entityRegistry->Assign<Hand>(_handEntity);
-	_entityRegistry->Assign<Transform>(_handEntity, glm::vec3(0), glm::vec3(0), glm::vec3(1.0));
+	_entityRegistry->Assign<Transform>(_handEntity, glm::vec3(0), glm::vec3(0), glm::vec3(.03));
 
 	Script script(this);
 	script.Load(source);

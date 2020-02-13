@@ -648,6 +648,8 @@ enum class MeshId
 	U_WashingLineJapanese = 623,
 	U_WashingLineNorse = 624,
 	U_WashingLineTibetan = 625,
+	// Custom entries
+	PlayerHand = 626,
 
 	_count
 };

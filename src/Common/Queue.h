@@ -37,21 +37,15 @@ public:
 
 	void Produce(T event)
 	{
-//		_Instance.push_back(event);
 
 		for(auto handler : _Handlers)
 		{
 			handler(std::move(event));
-//			handler(_Instance.front());
 		}
 
-//		_Instance.pop_front();
 	}
 
 private:
 	~EventQueue() { }
-
-	using Queue = std::list<T>;
-	Queue _Instance;
 	std::vector<EventHandler<T>> _Handlers;
 };
