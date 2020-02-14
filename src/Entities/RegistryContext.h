@@ -18,6 +18,7 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <3D/MeshLookup.h>
 
 namespace openblack::entities
 {

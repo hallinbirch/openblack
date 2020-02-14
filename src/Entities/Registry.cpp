@@ -48,7 +48,7 @@ void Registry::PrepareDrawDescs(bool drawBoundingBox)
 {
 	// Count number of instances
 	uint32_t instanceCount = 0;
-	std::map<MeshId, uint32_t> meshIds;
+	std::map<uint32_t, uint32_t> meshIds;
 
 	// Trees
 	_registry.view<const Tree, const Transform>().each(
@@ -82,20 +82,20 @@ void Registry::PrepareDrawDescs(bool drawBoundingBox)
 	_registry.view<const AnimatedStatic, const Transform>().each(
 	    [&meshIds, &instanceCount](const AnimatedStatic& entity, const Transform& transform) {
 		    // temporary-ish:
-		    MeshId meshId = MeshId::Dummy;
+		    MeshPackId meshId = MeshPackId::Dummy;
 		    if (entity.type == "Norse Gate")
 		    {
-			    meshId = MeshId::BuildingNorseGate;
+			    meshId = MeshPackId::BuildingNorseGate;
 		    }
 		    else if (entity.type == "Gate Stone Plinth")
 		    {
-			    meshId = MeshId::ObjectGateTotemPlinthe;
+			    meshId = MeshPackId::ObjectGateTotemPlinthe;
 		    }
 		    else if (entity.type == "Piper Cave Entrance")
 		    {
-			    meshId = MeshId::BuildingMineEntrance;
+			    meshId = MeshPackId::BuildingMineEntrance;
 		    }
-		    auto count = meshIds.insert(std::make_pair(meshId, 0));
+		    auto count = meshIds.insert(std::make_pair(static_cast<MeshId>(meshId), 0));
 		    count.first->second++;
 		    instanceCount++;
 	    });
@@ -121,8 +121,8 @@ void Registry::PrepareDrawDescs(bool drawBoundingBox)
 	// Fields
 	_registry.view<const Field, const Transform>().each(
 	    [&meshIds, &instanceCount](const Field& entity, const Transform& transform) {
-		    const auto meshId = MeshId::TreeWheat;
-		    auto count = meshIds.insert(std::make_pair(meshId, 0));
+		    const auto meshId = MeshPackId::TreeWheat;
+			auto count = meshIds.insert(std::make_pair(static_cast<MeshId>(meshId), 0));
 		    count.first->second++;
 		    instanceCount++;
 	    });
@@ -130,8 +130,8 @@ void Registry::PrepareDrawDescs(bool drawBoundingBox)
 	// Forests
 	_registry.view<const Forest, const Transform>().each(
 	    [&meshIds, &instanceCount](const Forest& entity, const Transform& transform) {
-		    const auto meshId = MeshId::FeatureForest;
-		    auto count = meshIds.insert(std::make_pair(meshId, 0));
+		    const auto meshId = MeshPackId::FeatureForest;
+			auto count = meshIds.insert(std::make_pair(static_cast<MeshId>(meshId), 0));
 		    count.first->second++;
 		    instanceCount++;
 	    });
@@ -148,7 +148,7 @@ void Registry::PrepareDrawDescs(bool drawBoundingBox)
 	// Hands
 	_registry.view<const Hand, const Transform>().each(
 		[&meshIds, &instanceCount](const Hand& entity, const Transform& transform) {
-			const auto meshId = MeshId::PlayerHand;
+			const auto meshId = 999;
 			auto count = meshIds.insert(std::make_pair(meshId, 0));
 			count.first->second++;
 			instanceCount++;
@@ -256,19 +256,20 @@ void Registry::PrepareDrawUploadUniforms(bool drawBoundingBox)
 	_registry.view<const AnimatedStatic, const Transform>().each(
 	    [&renderCtx, &uniformOffsets, prepareDrawBoundingBox](const AnimatedStatic& entity, const Transform& transform) {
 		    // temporary-ish:
-		    MeshId meshId = MeshId::Dummy;
+		    MeshPackId meshPackId = MeshPackId::Dummy;
 		    if (entity.type == "Norse Gate")
 		    {
-			    meshId = MeshId::BuildingNorseGate;
+			    meshPackId = MeshPackId::BuildingNorseGate;
 		    }
 		    else if (entity.type == "Gate Stone Plinth")
 		    {
-			    meshId = MeshId::ObjectGateTotemPlinthe;
+			    meshPackId = MeshPackId::ObjectGateTotemPlinthe;
 		    }
 		    else if (entity.type == "Piper Cave Entrance")
 		    {
-			    meshId = MeshId::BuildingMineEntrance;
+			    meshPackId = MeshPackId::BuildingMineEntrance;
 		    }
+			auto meshId = static_cast<MeshId>(meshPackId);
 		    auto offset = uniformOffsets.insert(std::make_pair(meshId, 0));
 		    auto desc = renderCtx.instancedDrawDescs.find(meshId);
 		    renderCtx.instanceUniforms[desc->second.offset + offset.first->second] = static_cast<glm::mat4>(transform);
@@ -301,7 +302,7 @@ void Registry::PrepareDrawUploadUniforms(bool drawBoundingBox)
 	// Fields
 	_registry.view<const Field, const Transform>().each(
 	    [&renderCtx, &uniformOffsets, prepareDrawBoundingBox](const Field& entity, const Transform& transform) {
-		    const auto meshId = MeshId::TreeWheat;
+		    const MeshId meshId = static_cast<MeshId>(MeshPackId::TreeWheat);
 		    auto offset = uniformOffsets.insert(std::make_pair(meshId, 0));
 		    auto desc = renderCtx.instancedDrawDescs.find(meshId);
 		    renderCtx.instanceUniforms[desc->second.offset + offset.first->second] = static_cast<glm::mat4>(transform);
@@ -312,7 +313,7 @@ void Registry::PrepareDrawUploadUniforms(bool drawBoundingBox)
 	// Forests
 	_registry.view<const Forest, const Transform>().each(
 	    [&renderCtx, &uniformOffsets, prepareDrawBoundingBox](const Forest& entity, const Transform& transform) {
-		    const auto meshId = MeshId::FeatureForest;
+			const MeshId meshId = static_cast<MeshId>(MeshPackId::FeatureForest);
 		    auto offset = uniformOffsets.insert(std::make_pair(meshId, 0));
 		    auto desc = renderCtx.instancedDrawDescs.find(meshId);
 		    renderCtx.instanceUniforms[desc->second.offset + offset.first->second] = static_cast<glm::mat4>(transform);
@@ -334,7 +335,7 @@ void Registry::PrepareDrawUploadUniforms(bool drawBoundingBox)
 	// Hands
 	_registry.view<const Hand, const Transform>().each(
 		[&renderCtx, &uniformOffsets, prepareDrawBoundingBox](const Hand& entity, const Transform& transform) {
-			const auto meshId = MeshId::PlayerHand;
+			MeshId meshId = 999;
 			auto offset = uniformOffsets.insert(std::make_pair(meshId, 0));
 			auto desc = renderCtx.instancedDrawDescs.find(meshId);
 			renderCtx.instanceUniforms[desc->second.offset + offset.first->second] = static_cast<glm::mat4>(transform);
@@ -411,7 +412,7 @@ void Registry::DrawModels(graphics::RenderPass viewId, const graphics::ShaderMan
 
 	for (const auto& [meshId, placers] : renderCtx.instancedDrawDescs)
 	{
-		if (meshId == MeshId::PlayerHand)
+		if (meshId == 999)
 		{
 			Game::instance()->GetHandModel().Submit(viewId, renderCtx.instanceUniformBuffer, placers.offset, placers.count, *objectShaderInstanced, state);
 		}
